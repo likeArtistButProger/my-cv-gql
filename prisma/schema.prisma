@@ -1,0 +1,76 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Profile {
+  id String @id @default(uuid(7)) @db.Uuid
+  name String
+  title String?
+  description String
+  links Link[]
+  skills Skill[]
+  experience Experience[]
+  projects Project[]
+}
+
+model Link {
+  id String @id @default(uuid(7)) @db.Uuid
+  text String
+  url String
+  sortOrder Int @default(0)
+  profileId String @db.Uuid
+
+  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([profileId])
+}
+
+model Skill {
+  id String @id @default(uuid(7)) @db.Uuid
+  name String
+  category String?
+  sortOrder Int @default(0)
+  profileId String @db.Uuid
+
+  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([profileId])
+}
+
+model Experience {
+  id String @id @default(uuid(7)) @db.Uuid
+  company String
+  role String
+  startDate DateTime @db.Date
+  endDate DateTime @db.Date
+  achievements String[]
+  profileId String @db.Uuid
+  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([profileId])
+}
+
+model Project {
+  id String @id @default(uuid(7)) @db.Uuid
+
+  name String
+  url String?
+  description String?
+  profileId String @db.Uuid
+  profile Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  sortOrder Int @default(0)
+
+  @@index([profileId])
+}
